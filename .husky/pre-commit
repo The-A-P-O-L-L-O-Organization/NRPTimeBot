@@ -1,1 +1,1 @@
-pnpm dlx biome check --write --staged --files-ignore-unknown=true
+pnpm biome check --write --staged --files-ignore-unknown=true

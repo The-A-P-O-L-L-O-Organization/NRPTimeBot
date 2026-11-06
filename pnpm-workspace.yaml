@@ -1,6 +1,13 @@
 packages:
   - .
 allowBuilds:
+  '@biomejs/biome': true
   '@bufbuild/buf': true
+  esbuild: true
 overrides:
   undici: 6.29.1
+  # Fix deprecated url.parse() usage in transitive dependencies
+  request: 2.88.2
+  har-validator: 5.1.5
+  uuid: 9.0.1
+  core-js: 3.38.1

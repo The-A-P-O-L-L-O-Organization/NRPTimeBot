@@ -1,8 +1,8 @@
 # Build stage
-FROM node:22-alpine AS build
+FROM node:26-alpine AS build
 
-# Enable corepack and install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Enable corepack and install pnpm 12
+RUN corepack enable && corepack prepare pnpm@12.18.0 --activate
 
 WORKDIR /app
 
@@ -27,10 +27,10 @@ COPY src/ src/
 RUN pnpm build
 
 # Production stage
-FROM node:22-alpine AS production
+FROM node:26-alpine AS production
 
-# Enable corepack and install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Enable corepack and install pnpm 12
+RUN corepack enable && corepack prepare pnpm@12.18.0 --activate
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
