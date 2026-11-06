@@ -39,3 +39,6 @@ reports/
 
 # Data (for local development - remove if you want to persist)
 data/
+
+# Documentation (was tracked separately)
+docs/
