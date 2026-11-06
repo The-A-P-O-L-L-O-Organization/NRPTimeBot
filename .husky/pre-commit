@@ -1,5 +1,1 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-# Run biome check (lint + format) on staged files
 pnpm dlx biome check --write --staged --files-ignore-unknown=true
