@@ -78,8 +78,14 @@ export function createInterlinkServer(deps: { override: OverrideModule; apiKey: 
   const { apiKey } = deps;
   const server = http.createServer(async (req, res) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+    // Health check endpoint (no auth required)
+    if (req.method === "GET" && req.url === "/health") {
+      sendJson(res, 200, { status: "ok", uptime: process.uptime() });
+      return;
+    }
 
     if (req.method === "OPTIONS") {
       res.writeHead(204);
