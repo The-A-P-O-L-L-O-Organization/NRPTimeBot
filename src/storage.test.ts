@@ -87,10 +87,43 @@ describe('storage', () => {
       expect(state.baseInGameYears).toBe(0);
       expect(state.rateYears).toBe(4);
     });
+
+    it('should handle null input in isValidState (internal)', () => {
+      // Test the isValidState function's null check by calling loadState with null-like conditions
+      // This is tested indirectly but we can verify the behavior
+      // The isValidState function returns false for null, which triggers defaults
+      mkdirSync(dataDir, { recursive: true });
+      writeFileSync(statePath, 'null', 'utf-8');
+
+      const state = loadState();
+      expect(state.baseInGameYears).toBe(0);
+      expect(state.rateYears).toBe(4);
+    });
+
+    it('should create data directory when loading state and it does not exist', () => {
+      // Ensure data directory doesn't exist
+      if (existsSync(dataDir)) {
+        rmSync(dataDir, { recursive: true, force: true });
+      }
+      // Also ensure state file doesn't exist
+      if (existsSync(statePath)) {
+        rmSync(statePath);
+      }
+
+      const state = loadState();
+      expect(state.baseInGameYears).toBe(0);
+      // The directory should be created by loadState
+      expect(existsSync(dataDir)).toBe(true);
+    });
   });
 
   describe('saveState', () => {
     it("should create data directory if it doesn't exist", () => {
+      // Ensure data directory doesn't exist
+      if (existsSync(dataDir)) {
+        rmSync(dataDir, { recursive: true, force: true });
+      }
+
       const state = {
         baseRealTimestamp: Date.now(),
         baseInGameYears: 100,

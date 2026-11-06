@@ -176,5 +176,49 @@ describe('timekeeper', () => {
       const formatted = formatTime(timeResult);
       expect(formatted).toContain('1h 1m');
     });
+
+    it('should format minutes and seconds', () => {
+      const timeResult = {
+        totalYears: 100,
+        date: {
+          year: 100,
+          month: 1,
+          monthName: 'January',
+          day: 1,
+          dayOfYear: 1,
+          week: 1,
+          totalDaysInYear: 365,
+        },
+        progress: 0,
+        rateText: '4 years per day',
+        paused: false,
+        nextYearInMs: 61000, // 1 minute 1 second
+      };
+
+      const formatted = formatTime(timeResult);
+      expect(formatted).toContain('1m 1s');
+    });
+
+    it('should format seconds only', () => {
+      const timeResult = {
+        totalYears: 100,
+        date: {
+          year: 100,
+          month: 1,
+          monthName: 'January',
+          day: 1,
+          dayOfYear: 1,
+          week: 1,
+          totalDaysInYear: 365,
+        },
+        progress: 0,
+        rateText: '4 years per day',
+        paused: false,
+        nextYearInMs: 500, // 500ms = 0.5s -> 0s
+      };
+
+      const formatted = formatTime(timeResult);
+      expect(formatted).toContain('0s');
+    });
   });
 });
