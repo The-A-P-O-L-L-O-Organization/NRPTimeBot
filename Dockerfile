@@ -12,6 +12,13 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 # Install all dependencies (including devDependencies for build)
 RUN pnpm install --frozen-lockfile
 
+# Copy protobuf definitions
+COPY proto/ proto/
+COPY buf.yaml buf.gen.yaml ./
+
+# Generate protobuf types
+RUN pnpm proto:generate
+
 # Copy source and config
 COPY tsconfig.json ./
 COPY src/ src/
@@ -45,13 +52,6 @@ RUN mkdir -p /app/data && chown -R nodejs:nodejs /app
 
 # Switch to non-root user
 USER nodejs
-
-# Expose interlink server port
-EXPOSE 3458
-
-# Health check for the interlink server
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3458/health || exit 1
 
 # Set environment variables
 ENV NODE_ENV=production

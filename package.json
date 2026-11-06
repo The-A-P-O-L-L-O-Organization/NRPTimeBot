@@ -1,20 +1,27 @@
 {
   "name": "nrp-time-bot",
   "version": "1.0.0",
-  "private": true,
   "type": "module",
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "tsc && node dist/index.js",
-    "register-commands": "node dist/scripts/register-commands.js"
+    "register-commands": "node dist/scripts/register-commands.js",
+    "proto:generate": "buf generate --template buf.gen.yaml"
   },
   "dependencies": {
+    "@bufbuild/protobuf": "^2.2.1",
+    "@bufbuild/protoc-gen-es": "^2.2.1",
+    "@connectrpc/connect": "^1.6.1",
+    "@connectrpc/connect-node": "^1.6.1",
+    "@connectrpc/protoc-gen-connect-es": "^1.6.1",
+    "@noble/hashes": "^2.4.0",
     "discord.js": "^14.16.0",
     "dotenv": "^16.4.0"
   },
   "devDependencies": {
-    "typescript": "^5.5.0",
-    "@types/node": "^20.0.0"
+    "@bufbuild/buf": "^1.47.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.5.0"
   }
 }
