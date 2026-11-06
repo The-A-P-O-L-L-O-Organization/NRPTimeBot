@@ -84,45 +84,47 @@ describe('override', () => {
     it('should fail with expired code', () => {
       vi.useFakeTimers();
       generateCode(AUTHORIZED_USER_ID);
-      
+
       // Advance time past expiration (5 minutes + 1ms)
       vi.advanceTimersByTime(5 * 60 * 1000 + 1);
-      
+
       const result = validateCode(AUTHORIZED_USER_ID, 'WRONG-CODE');
       expect(result.success).toBe(false);
       expect(result.message).toContain('expired');
-      
+
       vi.useRealTimers();
     });
 
     it('should succeed with correct code (covers lines 60-66)', () => {
       // Use fake timers to control time
       vi.useFakeTimers();
-      
+
       // Mock console.log to capture the generated code
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-      
+      const consoleSpy = vi.spyOn(console, 'log').mockImplementation((_msg) => {
+        // Intentionally empty - we capture calls via mock.calls
+      });
+
       // Generate a code
       generateCode(AUTHORIZED_USER_ID);
-      
+
       // Extract the code from the console.log call
       // The log format is: "[OVERRIDE] Code generated for user <id>: <code>"
       const logCalls = consoleSpy.mock.calls;
-      
+
       let capturedCode: string | null = null;
       for (const call of logCalls) {
         const message = call[0];
         if (typeof message === 'string' && message.includes('Code generated for user')) {
           const match = message.match(/Code generated for user [^:]+: (.+)/);
-          if (match) {
+          if (match && match[1]) {
             capturedCode = match[1];
             break;
           }
         }
       }
-      
+
       consoleSpy.mockRestore();
-      
+
       // If we captured a code, test the successful validation
       if (capturedCode) {
         const result = validateCode(AUTHORIZED_USER_ID, capturedCode);
@@ -136,7 +138,7 @@ describe('override', () => {
         deactivate(AUTHORIZED_USER_ID);
         expect(hasOverride(AUTHORIZED_USER_ID)).toBe(false);
       }
-      
+
       vi.useRealTimers();
     });
 
