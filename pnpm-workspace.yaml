@@ -1,2 +1,4 @@
+allowBuilds:
+  '@bufbuild/buf': true
 overrides:
   undici: 6.29.1

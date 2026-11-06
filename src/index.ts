@@ -19,7 +19,9 @@ import {
   deactivate,
   forceOverride,
 } from "./override.js";
-import { createInterlinkServer } from "./interlink/server.js";
+import { InterlinkClient, getInterlinkClient, resetInterlinkClient, generateNonce } from "./interlink/client.js";
+import { create } from "@bufbuild/protobuf";
+import { EnvelopeSchema, type Envelope } from "./generated/interlink/v1/interlink_pb.js";
 
 const TOKEN = process.env.DISCORD_TOKEN;
 if (!TOKEN) {
@@ -426,7 +428,202 @@ const commands = [
     ),
 ].map((c) => c.toJSON());
 
-let _interlinkServer: ReturnType<typeof createInterlinkServer> | null = null;
+let interlinkClient: InterlinkClient | null = null;
+let interlinkAbortController: AbortController | null = null;
+let heartbeatInterval: NodeJS.Timeout | null = null;
+let heartbeatFailures = 0;
+
+const HEARTBEAT_INTERVAL_MS = 30000;
+const HEARTBEAT_FAILURES_BEFORE_REREGISTER = 3;
+const INTERLINK_PROTOCOL = "apollo.interlink.v1";
+const INTERLINK_VERSION = "1.0";
+
+function createEnvelope(
+  type: string,
+  source: string,
+  target: string,
+  payload: Record<string, unknown>
+): Envelope {
+  return create(EnvelopeSchema, {
+    protocol: INTERLINK_PROTOCOL,
+    version: INTERLINK_VERSION,
+    type,
+    source,
+    target,
+    id: generateNonce(),
+    timestamp: BigInt(Date.now()),
+    nonce: generateNonce(),
+    payload: new TextEncoder().encode(JSON.stringify(payload)),
+    metadata: {},
+  });
+}
+
+async function sendPong(interlinkClient: InterlinkClient, source: string, target: string): Promise<void> {
+  const envelope = createEnvelope("pong", source, target, { status: "ok", uptime: process.uptime() });
+  try {
+    await interlinkClient.send(envelope);
+  } catch (err) {
+    console.error("[Interlink] Failed to send pong:", err);
+  }
+}
+
+async function handleIncomingEnvelope(envelope: Envelope, interlinkClient: InterlinkClient): Promise<void> {
+  try {
+    const payload = JSON.parse(new TextDecoder().decode(envelope.payload));
+    
+    if (envelope.type === "ping") {
+      await sendPong(interlinkClient, envelope.target, envelope.source);
+      return;
+    }
+
+    if (envelope.type === "command") {
+      const cmd = payload?.command as string | undefined;
+      if (cmd === "override") {
+        const action = payload?.action as string | undefined;
+        const userId = payload?.userId as string | undefined;
+        
+        let result: { success: boolean; message: string };
+        
+        if (action === "activate" && userId) {
+          const ok = forceOverride(userId);
+          result = { success: ok, message: ok ? "Override activated" : "Failed to activate override" };
+        } else if (action === "deactivate" && userId) {
+          const ok = deactivate(userId);
+          result = { success: ok, message: ok ? "Override deactivated" : "Override was not active" };
+        } else {
+          result = { success: false, message: "Invalid override command. Requires action and userId." };
+        }
+
+        const responseEnvelope = createEnvelope(
+          "command_response",
+          envelope.target,
+          envelope.source,
+          { status: result.success ? "ok" : "error", message: result.message, originalId: envelope.id }
+        );
+        
+        try {
+          await interlinkClient.send(responseEnvelope);
+        } catch (err) {
+          console.error("[Interlink] Failed to send command response:", err);
+        }
+      }
+    }
+  } catch (err) {
+    console.error("[Interlink] Error handling incoming envelope:", err);
+  }
+}
+
+async function startInterlinkClient(): Promise<void> {
+  const interlinkAddress = process.env.INTERLINK_ADDRESS;
+  const interlinkAuthKey = process.env.INTERLINK_AUTH_KEY;
+  const botId = process.env.INTERLINK_BOT_ID || "nrp-time-bot";
+
+  if (!interlinkAddress || !interlinkAuthKey) {
+    console.log("[Interlink] INTERLINK_ADDRESS or INTERLINK_AUTH_KEY not set — client disabled");
+    return;
+  }
+
+  if (interlinkAuthKey.length < 32) {
+    console.warn(`[Interlink] INTERLINK_AUTH_KEY is shorter than recommended minimum (32 chars)`);
+  }
+
+  interlinkClient = getInterlinkClient({
+    baseUrl: interlinkAddress,
+    botId,
+    authKey: interlinkAuthKey,
+    capabilities: { commands: "true", events: "true" },
+  });
+
+  interlinkAbortController = new AbortController();
+  const { signal } = interlinkAbortController;
+
+  try {
+    const registerResult = await interlinkClient.registerBot({
+      botId,
+      publicKey: "",
+      endpoint: interlinkAddress,
+      capabilities: { commands: "true", events: "true" },
+      maxConcurrentStreams: 100,
+    });
+
+    if (!registerResult.success) {
+      console.error("[Interlink] Registration failed:", registerResult.error);
+      return;
+    }
+
+    console.log("[Interlink] Registered successfully");
+
+    heartbeatFailures = 0;
+    heartbeatInterval = setInterval(async () => {
+      if (!interlinkClient || signal.aborted) return;
+      
+      try {
+        await interlinkClient.heartbeat({ botId, timestamp: BigInt(Date.now()) });
+        heartbeatFailures = 0;
+      } catch (err) {
+        heartbeatFailures += 1;
+        console.warn("[Interlink] Heartbeat failed:", err);
+        
+        if (heartbeatFailures >= HEARTBEAT_FAILURES_BEFORE_REREGISTER) {
+          heartbeatFailures = 0;
+          console.log("[Interlink] Re-registering after repeated heartbeat failures...");
+          try {
+            await interlinkClient?.registerBot({
+              botId,
+              publicKey: "",
+              endpoint: interlinkAddress,
+              capabilities: { commands: "true", events: "true" },
+              maxConcurrentStreams: 100,
+            });
+            console.log("[Interlink] Re-registered successfully");
+          } catch (registerErr) {
+            console.error("[Interlink] Re-registration failed:", registerErr);
+          }
+        }
+      }
+    }, HEARTBEAT_INTERVAL_MS);
+
+    if (typeof heartbeatInterval.unref === "function") {
+      heartbeatInterval.unref();
+    }
+
+    for await (const envelope of interlinkClient.subscribe(botId, [], { signal })) {
+      if (signal.aborted) break;
+      await handleIncomingEnvelope(envelope, interlinkClient);
+    }
+
+    if (signal.aborted) return;
+    console.warn("[Interlink] Subscription ended, attempting reconnect...");
+  } catch (err) {
+    if (signal.aborted) return;
+    console.error("[Interlink] Subscription error:", err);
+  }
+}
+
+async function stopInterlinkClient(): Promise<void> {
+  if (heartbeatInterval) {
+    clearInterval(heartbeatInterval);
+    heartbeatInterval = null;
+  }
+
+  if (interlinkAbortController) {
+    interlinkAbortController.abort();
+    interlinkAbortController = null;
+  }
+
+  if (interlinkClient) {
+    const botId = process.env.INTERLINK_BOT_ID || "nrp-time-bot";
+    try {
+      await interlinkClient.unregisterBot(botId);
+      console.log("[Interlink] Unregistered successfully");
+    } catch (err) {
+      console.warn("[Interlink] Unregister failed:", err);
+    }
+    interlinkClient = null;
+  }
+
+  resetInterlinkClient();
+}
 
 client.once("ready", async () => {
   console.log(`Logged in as ${client.user?.tag}`);
@@ -442,19 +639,7 @@ client.once("ready", async () => {
   catchUpMissedMidnights();
   scheduleNextMidnight();
 
-  const interlinkPort = parseInt(process.env.INTERLINK_PORT || "3458", 10);
-  const interlinkApiKey = process.env.INTERLINK_API_KEY;
-  if (interlinkApiKey) {
-    _interlinkServer = createInterlinkServer({
-      override: { forceOverride, deactivate },
-      apiKey: interlinkApiKey,
-    });
-    _interlinkServer.listen(interlinkPort, () => {
-      console.log(`[Interlink] Server listening on port ${interlinkPort}`);
-    });
-  } else {
-    console.log("[Interlink] INTERLINK_API_KEY not set — server disabled");
-  }
+  await startInterlinkClient();
 
   const rest = new REST({ version: "10" }).setToken(TOKEN);
   try {
@@ -506,16 +691,16 @@ client.on("interactionCreate", async (interaction) => {
   }
 });
 
-process.on("SIGINT", () => {
+process.on("SIGINT", async () => {
   console.log("\nShutting down...");
-  if (_interlinkServer) _interlinkServer.close();
+  await stopInterlinkClient();
   client.destroy();
   process.exit(0);
 });
 
-process.on("SIGTERM", () => {
+process.on("SIGTERM", async () => {
   console.log("\nShutting down...");
-  if (_interlinkServer) _interlinkServer.close();
+  await stopInterlinkClient();
   client.destroy();
   process.exit(0);
 });

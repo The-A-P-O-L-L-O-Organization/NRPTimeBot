@@ -8,21 +8,13 @@ services:
     env_file:
       - .env
     environment:
-      # Interlink server configuration
-      - INTERLINK_PORT=3458
-      - INTERLINK_API_KEY=${INTERLINK_API_KEY:-}
+      # Interlink ConnectRPC client configuration
+      - INTERLINK_ADDRESS=${INTERLINK_ADDRESS:-}
+      - INTERLINK_AUTH_KEY=${INTERLINK_AUTH_KEY:-}
+      - INTERLINK_BOT_ID=${INTERLINK_BOT_ID:-nrp-time-bot}
     volumes:
       - ./data:/app/data
-    ports:
-      # Expose interlink port for inter-service communication
-      - "3458:3458"
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3458/health"]
-      interval: 30s
-      timeout: 5s
-      start_period: 15s
-      retries: 3
     deploy:
       resources:
         limits:
@@ -40,6 +32,4 @@ services:
 networks:
   default:
     name: apollo-interlink
-    # Set external to false to let compose create the network
-    # Change to true if the network already exists and is managed externally
     external: false
