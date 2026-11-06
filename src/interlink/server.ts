@@ -17,8 +17,6 @@ interface OverrideModule {
   deactivate: (userId: string) => boolean;
 }
 
-const VALID_TYPES = new Set(["ping", "pong", "command", "event", "custom"]);
-
 function sendJson(res: http.ServerResponse, status: number, data: Record<string, unknown>): void {
   res.writeHead(status, { "Content-Type": "application/json" });
   res.end(JSON.stringify(data));
