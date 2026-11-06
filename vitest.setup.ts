@@ -1,7 +1,4 @@
-import { beforeEach, vi } from "vitest";
-
-// Mock console methods to reduce noise in tests
-const originalConsole = { ...console };
+import { beforeEach, vi } from 'vitest';
 
 beforeEach(() => {
   vi.resetAllMocks();

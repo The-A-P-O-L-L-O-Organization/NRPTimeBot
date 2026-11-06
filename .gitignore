@@ -1,6 +1,41 @@
+# Dependencies
 node_modules/
+pnpm-lock.yaml
+
+# Build output
 dist/
-.env
-data/
+build/
+
+# Generated protobuf files
+src/generated/
+
+# Coverage
+coverage/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
 *.log
-docs/
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Docker
+docker-compose.override.yml
+
+# Reports
+reports/
+
+# Data (for local development - remove if you want to persist)
+data/
