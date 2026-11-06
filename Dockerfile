@@ -1,6 +1,9 @@
 # Build stage
 FROM node:26-alpine AS build
 
+# Install corepack (not included in Node 26+ Alpine by default)
+RUN npm install -g corepack@latest
+
 # Enable corepack and install pnpm 12
 RUN corepack enable && corepack prepare pnpm@12.18.0 --activate
 
@@ -28,6 +31,9 @@ RUN pnpm build
 
 # Production stage
 FROM node:26-alpine AS production
+
+# Install corepack (not included in Node 26+ Alpine by default)
+RUN npm install -g corepack@latest
 
 # Enable corepack and install pnpm 12
 RUN corepack enable && corepack prepare pnpm@12.18.0 --activate
