@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto";
-import { createClient, type CallOptions, type Client } from "@connectrpc/connect";
+import { type CallOptions, type Client } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-node";
 import { createPromiseClient } from "@connectrpc/connect";
 import { hmac } from "@noble/hashes/hmac.js";
