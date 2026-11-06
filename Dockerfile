@@ -1,11 +1,8 @@
 # Build stage
 FROM node:26-alpine AS build
 
-# Install corepack (not included in Node 26+ Alpine by default)
-RUN npm install -g corepack@latest
-
-# Enable corepack and install pnpm 12
-RUN corepack enable && corepack prepare pnpm@12.18.0 --activate
+# Install pnpm directly (more reliable than corepack in Docker)
+RUN npm install -g pnpm@12.18.0
 
 WORKDIR /app
 
@@ -32,11 +29,8 @@ RUN pnpm build
 # Production stage
 FROM node:26-alpine AS production
 
-# Install corepack (not included in Node 26+ Alpine by default)
-RUN npm install -g corepack@latest
-
-# Enable corepack and install pnpm 12
-RUN corepack enable && corepack prepare pnpm@12.18.0 --activate
+# Install pnpm directly
+RUN npm install -g pnpm@12.18.0
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
