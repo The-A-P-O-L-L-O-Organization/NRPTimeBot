@@ -9,16 +9,30 @@ export interface GregorianDate {
 }
 
 const MONTHS = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
 
 const DAYS_IN_MONTH_COMMON = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 const DAYS_IN_MONTH_LEAP = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
 export function isLeapYear(year: number): boolean {
-  if (year % 400 === 0) return true;
-  if (year % 100 === 0) return false;
+  if (year % 400 === 0) {
+    return true;
+  }
+  if (year % 100 === 0) {
+    return false;
+  }
   return year % 4 === 0;
 }
 
@@ -36,12 +50,16 @@ export function totalYearsToDate(totalYears: number): GregorianDate {
 
   let cumulative = 0;
   let month = 0;
-  for (let i = 0; i < 12; i++) {
-    if (dayOfYear <= cumulative + daysInMonths[i]) {
+  for (let i = 0; i < daysInMonths.length; i++) {
+    const daysInMonth = daysInMonths[i];
+    if (daysInMonth === undefined) {
+      continue;
+    }
+    if (dayOfYear <= cumulative + daysInMonth) {
       month = i;
       break;
     }
-    cumulative += daysInMonths[i];
+    cumulative += daysInMonth;
   }
 
   const day = dayOfYear - cumulative;
@@ -50,7 +68,7 @@ export function totalYearsToDate(totalYears: number): GregorianDate {
   return {
     year,
     month: month + 1,
-    monthName: MONTHS[month],
+    monthName: MONTHS[month] ?? 'Unknown',
     day,
     dayOfYear,
     week,

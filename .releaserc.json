@@ -1,0 +1,39 @@
+{
+  "branches": ["main"],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/changelog",
+    "@semantic-release/npm",
+    "@semantic-release/git",
+    "@semantic-release/github"
+  ],
+  "preset": "conventionalcommits",
+  "commitAnalyzer": {
+    "preset": "conventionalcommits"
+  },
+  "releaseNotesGenerator": {
+    "preset": "conventionalcommits",
+    "writerOpts": {
+      "headerPartial": "# Changelog\n\nAll notable changes to this project will be documented in this file.\n"
+    }
+  },
+  "changelog": {
+    "changelogFile": "CHANGELOG.md",
+    "changelogTitle": "# Changelog\n\nAll notable changes to this project will be documented in this file.\n"
+  },
+  "git": {
+    "push": true,
+    "requireBranch": "main",
+    "assets": ["CHANGELOG.md", "package.json", "package-lock.json"]
+  },
+  "github": {
+    "successComment": false,
+    "failComment": false,
+    "releasedLabels": ["released"],
+    "addReleases": "bottom"
+  },
+  "npm": {
+    "publish": true
+  }
+}
