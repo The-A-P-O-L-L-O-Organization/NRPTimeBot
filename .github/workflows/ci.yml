@@ -28,8 +28,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        env:
-          PNPM_MINIMUM_RELEASE_AGE: 0
 
       - name: Run Biome check (lint + format)
         run: pnpm check
@@ -55,8 +53,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        env:
-          PNPM_MINIMUM_RELEASE_AGE: 0
 
       - name: Generate protobuf types
         run: pnpm proto:generate
@@ -96,8 +92,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        env:
-          PNPM_MINIMUM_RELEASE_AGE: 0
 
       - name: Generate protobuf types
         run: pnpm proto:generate
@@ -174,8 +168,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        env:
-          PNPM_MINIMUM_RELEASE_AGE: 0
 
       - name: Run npm audit
         run: pnpm audit --prod
@@ -224,8 +216,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        env:
-          PNPM_MINIMUM_RELEASE_AGE: 0
 
       - name: Generate protobuf types
         run: pnpm proto:generate
