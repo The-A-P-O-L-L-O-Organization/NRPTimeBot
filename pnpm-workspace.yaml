@@ -5,6 +5,7 @@ allowBuilds:
   '@bufbuild/buf': true
   esbuild: true
 overrides:
+  conventional-changelog-writer: ^9.3.0
   undici: 6.29.1
   # Fix deprecated url.parse() usage in transitive dependencies
   request: 2.88.2
