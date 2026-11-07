@@ -1,8 +1,10 @@
 version: v2
 plugins:
-  - remote: buf.build/protocolbuffers/es:v2.17.0
+  - local:
+      - protoc-gen-es
     out: src/generated
     opt: target=ts
-  - remote: buf.build/connectrpc/connect-es:v1.7.0
+  - local:
+      - protoc-gen-connect-es
     out: src/generated
     opt: target=ts

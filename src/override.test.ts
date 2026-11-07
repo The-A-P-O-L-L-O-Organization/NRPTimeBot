@@ -116,7 +116,7 @@ describe('override', () => {
         const message = call[0];
         if (typeof message === 'string' && message.includes('Code generated for user')) {
           const match = message.match(/Code generated for user [^:]+: (.+)/);
-          if (match && match[1]) {
+          if (match?.[1]) {
             capturedCode = match[1];
             break;
           }
