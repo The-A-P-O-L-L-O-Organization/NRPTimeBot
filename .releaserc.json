@@ -25,7 +25,7 @@
   "git": {
     "push": true,
     "requireBranch": "main",
-    "assets": ["CHANGELOG.md", "package.json", "package-lock.json"]
+    "assets": ["CHANGELOG.md", "package.json"]
   },
   "github": {
     "successComment": false,
@@ -34,6 +34,6 @@
     "addReleases": "bottom"
   },
   "npm": {
-    "publish": true
+    "publish": false
   }
 }
