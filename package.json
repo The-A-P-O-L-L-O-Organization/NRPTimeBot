@@ -43,7 +43,7 @@
     "husky": "^9.1.6",
     "semantic-release": "^24.1.0",
     "typescript": "^5.5.0",
-    "vitest": "^2.1.1"
+    "vitest": "^4.1.11"
   },
   "packageManager": "pnpm@12.18.0",
   "engines": {
