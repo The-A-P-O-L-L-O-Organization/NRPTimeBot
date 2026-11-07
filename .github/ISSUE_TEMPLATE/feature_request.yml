@@ -1,6 +1,6 @@
 name: Feature request
 description: Propose an idea or improvement for the bot
-labels: [enhancement]
+labels: [ enhancement ]
 body:
   - type: textarea
     id: problem

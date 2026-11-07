@@ -57,16 +57,16 @@ This repo uses **[Conventional Commits](https://www.conventionalcommits.org)** a
 
 Use the format `type(scope?): description`. Common types:
 
-| Type       | Triggers   | Use for                                            |
-| ---------- | ---------- | -------------------------------------------------- |
-| `fix`      | patch ⬆    | Bug fixes                                          |
-| `feat`     | minor ⬆    | New features                                       |
-| `perf`     | patch ⬆    | Performance improvements                           |
-| `refactor` | —          | Code changes that neither fix nor add features     |
-| `docs`     | —          | Documentation changes                              |
-| `test`     | —          | Adding or fixing tests                             |
-| `chore`    | —          | Maintenance, tooling, dependencies                 |
-| `ci`       | —          | CI/CD changes                                      |
+| Type       | Triggers | Use for                                        |
+| ---------- | -------- | ---------------------------------------------- |
+| `fix`      | patch ⬆  | Bug fixes                                      |
+| `feat`     | minor ⬆  | New features                                   |
+| `perf`     | patch ⬆  | Performance improvements                       |
+| `refactor` | —        | Code changes that neither fix nor add features |
+| `docs`     | —        | Documentation changes                          |
+| `test`     | —        | Adding or fixing tests                         |
+| `chore`    | —        | Maintenance, tooling, dependencies             |
+| `ci`       | —        | CI/CD changes                                  |
 
 Breaking changes: add `!` after the type (e.g. `feat!: ...`) or include a `BREAKING CHANGE:` footer — this triggers a major semver bump.
 

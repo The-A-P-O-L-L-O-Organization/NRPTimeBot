@@ -19,16 +19,16 @@ A [discord.js](https://discord.js.org)-based Discord bot for in-game time & sche
 
 ## Slash Commands
 
-| Command                 | Description                                       |
-| ----------------------- | ------------------------------------------------- |
-| `/time`                 | Show the current in-game time                     |
-| `/setrate years:<n>`    | Set the in-game rate in years per day             |
-| `/settime years:<n>`    | Manually set the current in-game year             |
-| `/pause`                | Pause time progression                            |
-| `/resume`               | Resume time progression                           |
-| `/reset`                | Reset time to year 0 and pause                    |
-| `/announce`             | Send a greeting announcement to the channel       |
-| `/maintenance on/off`   | Toggle the maintenance override (authorized only) |
+| Command               | Description                                       |
+| --------------------- | ------------------------------------------------- |
+| `/time`               | Show the current in-game time                     |
+| `/setrate years:<n>`  | Set the in-game rate in years per day             |
+| `/settime years:<n>`  | Manually set the current in-game year             |
+| `/pause`              | Pause time progression                            |
+| `/resume`             | Resume time progression                           |
+| `/reset`              | Reset time to year 0 and pause                    |
+| `/announce`           | Send a greeting announcement to the channel       |
+| `/maintenance on/off` | Toggle the maintenance override (authorized only) |
 
 ## Getting Started
 
@@ -85,15 +85,15 @@ State is persisted by mounting `./data:/app/data`.
 
 ## Development
 
-| Script                            | Description                                        |
-| --------------------------------- | -------------------------------------------------- |
-| `pnpm dev`                        | Build and start the bot locally                    |
-| `pnpm build`                      | Compile TypeScript into `dist/`                    |
-| `pnpm typecheck`                  | Type-check without emitting                        |
-| `pnpm test`                       | Run tests with vitest and coverage (v8)            |
-| `pnpm check` / `pnpm check:fix`   | Biome lint + format check (with autofix)           |
-| `pnpm proto:generate`             | Regenerate protobuf types into `src/generated/`    |
-| `pnpm release`                    | Run semantic-release dry gate (CI performs actual releases) |
+| Script                          | Description                                                 |
+| ------------------------------- | ----------------------------------------------------------- |
+| `pnpm dev`                      | Build and start the bot locally                             |
+| `pnpm build`                    | Compile TypeScript into `dist/`                             |
+| `pnpm typecheck`                | Type-check without emitting                                 |
+| `pnpm test`                     | Run tests with vitest and coverage (v8)                     |
+| `pnpm check` / `pnpm check:fix` | Biome lint + format check (with autofix)                    |
+| `pnpm proto:generate`           | Regenerate protobuf types into `src/generated/`             |
+| `pnpm release`                  | Run semantic-release dry gate (CI performs actual releases) |
 
 ### Tech stack
 
@@ -136,8 +136,9 @@ state the exclusion of warranty; and each file should have at least
 the "copyright" line and a pointer to where the full notice is found.
 
 ```
-    <one line to give the program's name and a brief idea of what it does.>
-    Copyright (C) <year>  <name of author>
+    NRPTimeBot, a discord.js-based in-game time and schedule
+    management Discord bot.
+    Copyright (C) 2026  Mitchell Sehenuk (CodeMaster013)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -159,7 +160,7 @@ If the program does terminal interaction, make it output a short
 notice like this when it starts in an interactive mode:
 
 ```
-    <program>  Copyright (C) <year>  <name of author>
+    NRPTimeBot  Copyright (C) 2026  Mitchell Sehenuk (CodeMaster013)
     This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
     This is free software, and you are welcome to redistribute it
     under certain conditions; type `show c' for details.
@@ -175,4 +176,3 @@ For more information on this, and how to apply and follow the GNU GPL, see
 <https://www.gnu.org/licenses/>.
 
 </details>
-

@@ -24,6 +24,6 @@
 
 ## Checklist
 
-- [ ] Commit messages follow [Conventional Commits](https://www.conventionalcommits.org) (*no release is cut unless you use `fix:` / `feat:`*)
+- [ ] Commit messages follow [Conventional Commits](https://www.conventionalcommits.org) (_no release is cut unless you use `fix:` / `feat:`_)
 - [ ] No generated artifacts (`dist/`, `coverage/`) are included
 - [ ] Documentation (README / docs) updated where relevant
