@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.6.6/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -7,13 +7,14 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": [
-      "dist/**",
-      "node_modules/**",
-      "src/generated/**",
-      "coverage/**",
-      "reports/**",
-      "*.config.*"
+    "includes": [
+      "**",
+      "!**/dist",
+      "!**/node_modules",
+      "!**/src/generated",
+      "!**/coverage",
+      "!**/reports",
+      "!**/*.config.*"
     ]
   },
   "formatter": {
@@ -27,13 +28,11 @@
     "bracketSpacing": true,
     "useEditorconfig": true
   },
-  "organizeImports": {
-    "enabled": true
-  },
+  "assist": { "enabled": true, "actions": { "source": { "organizeImports": "on" } } },
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "complexity": {
         "noForEach": "off",
         "noStaticOnlyClass": "off",
@@ -43,7 +42,9 @@
         "useArrowFunction": "warn",
         "useFlatMap": "warn",
         "useLiteralKeys": "off",
-        "useOptionalChain": "warn"
+        "useOptionalChain": "warn",
+        "noArguments": "warn",
+        "noCommaOperator": "error"
       },
       "correctness": {
         "noChildrenProp": "error",
@@ -53,7 +54,6 @@
         "noGlobalObjectCalls": "error",
         "noInvalidBuiltinInstantiation": "error",
         "noInvalidConstructorSuper": "error",
-        "noNewSymbol": "error",
         "noPrecisionLoss": "warn",
         "noSelfAssign": "error",
         "noSetterReturn": "error",
@@ -67,7 +67,8 @@
         "noUnusedPrivateClassMembers": "warn",
         "noUnusedVariables": "warn",
         "useExhaustiveDependencies": "warn",
-        "useIsNan": "error"
+        "useIsNan": "error",
+        "useValidTypeof": "error"
       },
       "nursery": {
         "useExplicitType": "off"
@@ -82,8 +83,6 @@
         "noGlobalEval": "error"
       },
       "style": {
-        "noArguments": "warn",
-        "noCommaOperator": "error",
         "noDefaultExport": "warn",
         "noInferrableTypes": "warn",
         "noNamespace": "warn",
@@ -131,8 +130,7 @@
         "noSparseArray": "warn",
         "noThenProperty": "warn",
         "noUnsafeNegation": "warn",
-        "useGetterReturn": "error",
-        "useValidTypeof": "error"
+        "useGetterReturn": "error"
       }
     }
   },
@@ -155,8 +153,5 @@
     "formatter": {
       "trailingCommas": "none"
     }
-  },
-  "assists": {
-    "enabled": true
   }
 }

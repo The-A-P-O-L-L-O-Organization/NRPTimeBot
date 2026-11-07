@@ -1,19 +1,18 @@
 import { randomBytes } from 'node:crypto';
 import {
-  type DescMessage,
-  type MessageShape,
   clone,
   create,
+  type DescMessage,
   isMessage,
+  type MessageShape,
   toJson,
 } from '@bufbuild/protobuf';
 import type { CallOptions, Client } from '@connectrpc/connect';
-import { createPromiseClient } from '@connectrpc/connect';
+import { createClient } from '@connectrpc/connect';
 import { createConnectTransport } from '@connectrpc/connect-node';
 import { hmac } from '@noble/hashes/hmac.js';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { bytesToHex } from '@noble/hashes/utils.js';
-import { InterlinkService } from '../generated/interlink/v1/interlink_connect.js';
 import {
   type BotInfo,
   type Envelope,
@@ -21,6 +20,7 @@ import {
   GetBotInfoRequestSchema,
   HeartbeatRequestSchema,
   type HeartbeatResponse,
+  InterlinkService,
   ListBotsRequestSchema,
   type ListBotsResponse,
   RegisterBotRequestSchema,
@@ -149,7 +149,7 @@ export class InterlinkClient {
       baseUrl: options.baseUrl,
       httpVersion: '2',
     });
-    this.client = createPromiseClient(InterlinkService, transport);
+    this.client = createClient(InterlinkService, transport);
   }
 
   private async headersFor<Desc extends DescMessage>(
@@ -182,7 +182,7 @@ export class InterlinkClient {
   async send(envelope: Envelope, options?: CallOptions): Promise<SendResponse> {
     const message = create(EnvelopeSchema, envelope);
     const callOpts = await this.callOptions(
-      procedureFor(InterlinkService.methods.send.name),
+      procedureFor(InterlinkService.method.send.name),
       { schema: EnvelopeSchema, message },
       options
     );
@@ -199,7 +199,7 @@ export class InterlinkClient {
     const nonce = generateNonce();
     const bodyHash = bodyHashOf(SubscribeRequestSchema, message);
     const headers = {
-      Authorization: `${INTERLINK_AUTH_SCHEME} ${signRequest(this.authKey, procedureFor(InterlinkService.methods.subscribe.name), timestamp, nonce, bodyHash)}`,
+      Authorization: `${INTERLINK_AUTH_SCHEME} ${signRequest(this.authKey, procedureFor(InterlinkService.method.subscribe.name), timestamp, nonce, bodyHash)}`,
       [INTERLINK_TIMESTAMP_HEADER]: timestamp,
       [INTERLINK_NONCE_HEADER]: nonce,
       [INTERLINK_BOT_HEADER]: botId,
@@ -225,7 +225,7 @@ export class InterlinkClient {
   ): Promise<RegisterBotResponse> {
     const message = create(RegisterBotRequestSchema, request);
     const callOpts = await this.callOptions(
-      procedureFor(InterlinkService.methods.registerBot.name),
+      procedureFor(InterlinkService.method.registerBot.name),
       { schema: RegisterBotRequestSchema, message },
       options
     );
@@ -238,7 +238,7 @@ export class InterlinkClient {
   ): Promise<HeartbeatResponse> {
     const message = create(HeartbeatRequestSchema, request);
     const callOpts = await this.callOptions(
-      procedureFor(InterlinkService.methods.heartbeat.name),
+      procedureFor(InterlinkService.method.heartbeat.name),
       { schema: HeartbeatRequestSchema, message },
       options
     );
@@ -248,7 +248,7 @@ export class InterlinkClient {
   async unregisterBot(botId: string, options?: CallOptions): Promise<UnregisterBotResponse> {
     const message = create(UnregisterBotRequestSchema, { botId });
     const callOpts = await this.callOptions(
-      procedureFor(InterlinkService.methods.unregisterBot.name),
+      procedureFor(InterlinkService.method.unregisterBot.name),
       { schema: UnregisterBotRequestSchema, message },
       options
     );
@@ -258,7 +258,7 @@ export class InterlinkClient {
   async listBots(options?: CallOptions): Promise<ListBotsResponse> {
     const message = create(ListBotsRequestSchema, {});
     const callOpts = await this.callOptions(
-      procedureFor(InterlinkService.methods.listBots.name),
+      procedureFor(InterlinkService.method.listBots.name),
       { schema: ListBotsRequestSchema, message },
       options
     );
@@ -268,7 +268,7 @@ export class InterlinkClient {
   async getBotInfo(botId: string, options?: CallOptions): Promise<BotInfo> {
     const message = create(GetBotInfoRequestSchema, { botId });
     const callOpts = await this.callOptions(
-      procedureFor(InterlinkService.methods.getBotInfo.name),
+      procedureFor(InterlinkService.method.getBotInfo.name),
       { schema: GetBotInfoRequestSchema, message },
       options
     );

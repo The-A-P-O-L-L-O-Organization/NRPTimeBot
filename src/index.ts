@@ -12,9 +12,9 @@ import {
 } from 'discord.js';
 import { type Envelope, EnvelopeSchema } from './generated/interlink/v1/interlink_pb.js';
 import {
-  type InterlinkClient,
   generateNonce,
   getInterlinkClient,
+  type InterlinkClient,
   resetInterlinkClient,
 } from './interlink/client.js';
 import {
