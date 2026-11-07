@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or Support
+    url: https://github.com/The-A-P-O-L-L-O-Organization/NRPTimeBot/discussions
+    about: Ask usage questions and get help from the community — please don't use the issue tracker for questions.
