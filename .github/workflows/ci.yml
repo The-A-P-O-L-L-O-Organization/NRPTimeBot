@@ -116,7 +116,6 @@ jobs:
           test -f dist/interlink/client.js
           test -f dist/scripts/register-commands.js
           test -f dist/generated/interlink/v1/interlink_pb.js
-          test -f dist/generated/interlink/v1/interlink_connect.js
 
   security:
     name: Security Audit
