@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/The-A-P-O-L-L-O-Organization/NRPTimeBot/compare/v1.0.0...v1.0.1) (2026-11-07)
+
+### Bug Fixes
+
+* **ci:** drop interlink_connect.js from build output check (removed in connect v2) ([415ae55](https://github.com/The-A-P-O-L-L-O-Organization/NRPTimeBot/commit/415ae5565c7ca9906de231aa998ea626be5a26aa))
+* **release:** force conventional-changelog-writer >=9 for semantic-release ([75a3774](https://github.com/The-A-P-O-L-L-O-Organization/NRPTimeBot/commit/75a3774dcf486792b128076a6bd10f0a868850d6))
+
 ## 1.0.0 (2026-11-07)
 
 ### Features
