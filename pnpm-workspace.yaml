@@ -1,8 +1,8 @@
 packages:
   - .
 allowBuilds:
-  '@biomejs/biome': true
-  '@bufbuild/buf': true
+  "@biomejs/biome": true
+  "@bufbuild/buf": true
   esbuild: true
 overrides:
   conventional-changelog-writer: ^9.3.0
