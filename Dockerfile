@@ -9,6 +9,9 @@ WORKDIR /app
 # Copy package files first for better layer caching
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
+# Disable supply-chain minimum release age check for lockfile-verified installs
+RUN pnpm config set minimum-release-age 0
+
 # Install all dependencies (including devDependencies for build)
 RUN pnpm install --frozen-lockfile
 
@@ -40,6 +43,9 @@ WORKDIR /app
 
 # Copy package files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# Disable supply-chain minimum release age check for lockfile-verified installs
+RUN pnpm config set minimum-release-age 0
 
 # Install production dependencies only
 RUN pnpm install --frozen-lockfile --prod
