@@ -685,4 +685,45 @@ process.on('SIGTERM', async () => {
   process.exit(0);
 });
 
-client.login(TOKEN);
+client.on('error', (err) => {
+  console.error('[Discord] Client error:', err instanceof Error ? err.message : err);
+});
+
+client.on('shardError', (err) => {
+  console.error('[Discord] Shard error:', err instanceof Error ? err.message : err);
+});
+
+client.on('rateLimit', (data) => {
+  console.warn('[Discord] Rate limited:', JSON.stringify(data));
+});
+
+client.on('invalidSession', () => {
+  console.warn('[Discord] Invalid session received; discord.js will re-identify.');
+});
+
+const LOGIN_BASE_DELAY_MS = 2000;
+const LOGIN_MAX_DELAY_MS = 60000;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function loginWithRetry(): Promise<void> {
+  let attempt = 0;
+  while (true) {
+    try {
+      await client.login(TOKEN);
+      return;
+    } catch (err) {
+      attempt += 1;
+      const delay = Math.min(LOGIN_BASE_DELAY_MS * 2 ** (attempt - 1), LOGIN_MAX_DELAY_MS);
+      console.error(
+        `[Discord] Login failed (attempt ${attempt}); retrying in ${delay / 1000}s:`,
+        err instanceof Error ? err.message : err
+      );
+      await sleep(delay);
+    }
+  }
+}
+
+loginWithRetry();
