@@ -1,3 +1,9 @@
+## [1.0.4](https://github.com/The-A-P-O-L-L-O-Organization/NRPTimeBot/compare/v1.0.3...v1.0.4) (2026-11-26)
+
+### Bug Fixes
+
+* **docker:** keep node_modules intact; disable pnpm runtime re-install + minimumReleaseAge ([27cbe37](https://github.com/The-A-P-O-L-L-O-Organization/NRPTimeBot/commit/27cbe3741b5b3411109deaa938f339b11c22990a))
+
 ## [1.0.3](https://github.com/The-A-P-O-L-L-O-Organization/NRPTimeBot/compare/v1.0.2...v1.0.3) (2026-11-26)
 
 ### Bug Fixes
