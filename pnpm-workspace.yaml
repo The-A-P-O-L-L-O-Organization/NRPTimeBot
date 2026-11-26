@@ -1,5 +1,9 @@
 packages:
   - .
+# Supply-chain: don't reject recently-published locked packages (Docker/CI use frozen lockfile + prod install)
+minimumReleaseAge: 0
+# Don't auto re-install before scripts at runtime (image ships node_modules; avoids recreating it + policy re-checks)
+verifyDepsBeforeRun: false
 allowBuilds:
   "@biomejs/biome": true
   "@bufbuild/buf": true

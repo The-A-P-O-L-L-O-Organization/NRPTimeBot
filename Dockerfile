@@ -53,6 +53,9 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 # Disable supply-chain minimum release age check for lockfile-verified installs
 RUN pnpm config set minimum-release-age 0
 
+# Don't re-install/verify deps before scripts at runtime; image ships node_modules
+RUN pnpm config set verifyDepsBeforeRun false
+
 # Install production dependencies only
 RUN pnpm install --frozen-lockfile --prod
 
@@ -68,5 +71,5 @@ USER nodejs
 # Set environment variables
 ENV NODE_ENV=production
 
-# Start the application
-CMD ["pnpm", "start"]
+# Start the application directly (no pnpm pre-script dependency check/install)
+CMD ["node", "dist/index.js"]
