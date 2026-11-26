@@ -31,8 +31,5 @@
     "failComment": false,
     "releasedLabels": ["released"],
     "addReleases": "bottom"
-  },
-  "npm": {
-    "publish": false
   }
 }

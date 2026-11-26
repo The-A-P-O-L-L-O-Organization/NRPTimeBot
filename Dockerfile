@@ -5,7 +5,7 @@ FROM node:26-alpine AS build
 RUN npm install -g corepack@latest
 
 # Enable corepack and install pnpm 12
-RUN corepack enable && corepack prepare pnpm@12.18.0 --activate
+RUN corepack enable && corepack prepare pnpm@12.23.0 --activate
 
 WORKDIR /app
 
@@ -39,7 +39,7 @@ FROM node:26-alpine AS production
 RUN npm install -g corepack@latest
 
 # Enable corepack and install pnpm 12
-RUN corepack enable && corepack prepare pnpm@12.18.0 --activate
+RUN corepack enable && corepack prepare pnpm@12.23.0 --activate
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
