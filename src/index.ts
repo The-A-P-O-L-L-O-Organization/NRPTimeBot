@@ -114,33 +114,37 @@ function scheduleNextMidnight(): void {
 }
 
 async function midnightTick(): Promise<void> {
-  if (state.paused) {
+  try {
+    if (state.paused) {
+      return;
+    }
+
+    const now = Date.now();
+    const current = calculateTime(state, now);
+    const year = Math.floor(current.totalYears);
+
+    const todayMidnight = Date.UTC(
+      new Date(now).getUTCFullYear(),
+      new Date(now).getUTCMonth(),
+      new Date(now).getUTCDate()
+    );
+
+    state.baseInGameYears = current.totalYears;
+    state.baseRealTimestamp = todayMidnight;
+
+    if (year > state.lastAnnouncedYear) {
+      state.lastAnnouncedYear = year;
+      saveState(state);
+      await announceYear(year);
+    } else {
+      saveState(state);
+    }
+  } catch (err) {
+    console.error('[midnight] midnightTick failed:', err instanceof Error ? err.message : err);
+  } finally {
+    // Always schedule the next tick, even if this one failed or was skipped.
     scheduleNextMidnight();
-    return;
   }
-
-  const now = Date.now();
-  const current = calculateTime(state, now);
-  const year = Math.floor(current.totalYears);
-
-  const todayMidnight = Date.UTC(
-    new Date(now).getUTCFullYear(),
-    new Date(now).getUTCMonth(),
-    new Date(now).getUTCDate()
-  );
-
-  state.baseInGameYears = current.totalYears;
-  state.baseRealTimestamp = todayMidnight;
-
-  if (year > state.lastAnnouncedYear) {
-    state.lastAnnouncedYear = year;
-    saveState(state);
-    await announceYear(year);
-  } else {
-    saveState(state);
-  }
-
-  scheduleNextMidnight();
 }
 
 async function handleTime(interaction: ChatInputCommandInteraction): Promise<void> {
@@ -604,7 +608,7 @@ async function stopInterlinkClient(): Promise<void> {
   resetInterlinkClient();
 }
 
-client.once('ready', async () => {
+client.once('clientReady', async () => {
   state = loadState();
 
   if (state.baseRealTimestamp === 0) {
@@ -612,7 +616,16 @@ client.once('ready', async () => {
     saveState(state);
   }
 
-  catchUpMissedMidnights();
+  try {
+    catchUpMissedMidnights();
+  } catch (err) {
+    console.error(
+      '[ready] catchUpMissedMidnights failed:',
+      err instanceof Error ? err.message : err
+    );
+  }
+
+  // Schedule first regardless of any earlier failure.
   scheduleNextMidnight();
 
   await startInterlinkClient();

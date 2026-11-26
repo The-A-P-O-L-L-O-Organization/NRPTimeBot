@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { loadState, saveState } from './storage.js';
 
 describe('storage', () => {
@@ -177,6 +177,32 @@ describe('storage', () => {
       const content = readFileSync(statePath, 'utf-8');
       expect(content).toContain('\n');
       expect(content).toContain('  ');
+    });
+
+    it('should not throw when state cannot be written (e.g. EACCES)', () => {
+      const state = {
+        baseRealTimestamp: 1000000,
+        baseInGameYears: 100,
+        rateYears: 4,
+        paused: false,
+        pausedAtMs: 0,
+        totalPausedMs: 0,
+        lastAnnouncedYear: 100,
+      };
+
+      mkdirSync(dataDir, { recursive: true });
+      // Force writeFileSync to fail: make state.json a directory (EISDIR),
+      // not bypassable by permissions, unlike a read-only file/dir.
+      mkdirSync(statePath, { recursive: true });
+
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      try {
+        expect(() => saveState(state)).not.toThrow();
+        expect(warnSpy).toHaveBeenCalled();
+      } finally {
+        warnSpy.mockRestore();
+        rmSync(statePath, { recursive: true, force: true });
+      }
     });
   });
 });

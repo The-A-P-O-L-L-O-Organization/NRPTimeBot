@@ -57,8 +57,17 @@ export function loadState(): BotState {
 }
 
 export function saveState(state: BotState): void {
-  if (!existsSync(DATA_DIR)) {
-    mkdirSync(DATA_DIR, { recursive: true });
+  try {
+    if (!existsSync(DATA_DIR)) {
+      mkdirSync(DATA_DIR, { recursive: true });
+    }
+    writeFileSync(STATE_PATH, JSON.stringify(state, null, 2), 'utf-8');
+  } catch (err) {
+    // Persistence is best-effort: keep running even if we can't write state.json
+    // (e.g. EACCES on a read-only or wrongly-owned /app/data mount).
+    console.warn(
+      'Could not write state.json; continuing without persistence:',
+      err instanceof Error ? err.message : err
+    );
   }
-  writeFileSync(STATE_PATH, JSON.stringify(state, null, 2), 'utf-8');
 }
