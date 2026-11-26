@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/The-A-P-O-L-L-O-Organization/NRPTimeBot/compare/v1.0.2...v1.0.3) (2026-11-26)
+
+### Bug Fixes
+
+* **deps:** update dependencies and migrate semantic-release v26 + pnpm 12.23 ([b0105e8](https://github.com/The-A-P-O-L-L-O-Organization/NRPTimeBot/commit/b0105e8afdfaa5a9016fe317a662a13218a67006))
+* harden state persistence against write failures ([6612016](https://github.com/The-A-P-O-L-L-O-Organization/NRPTimeBot/commit/6612016a5375598875e90a41dadc7f3e46c537f4))
+
 ## [1.0.2](https://github.com/The-A-P-O-L-L-O-Organization/NRPTimeBot/compare/v1.0.1...v1.0.2) (2026-11-11)
 
 ### Bug Fixes
